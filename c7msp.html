@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C7 MSP — Managed IT That Just Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10151c;
+    --ink-2:#161d26;
+    --paper:#eceff3;
+    --paper-2:#dfe4ea;
+    --slate:#2b3440;
+    --slate-soft:#5b6675;
+    --amber:#f2a93b;
+    --amber-dim:#a8752a;
+    --teal:#1b4b4a;
+    --teal-bright:#3fa79a;
+    --line:rgba(16,21,28,0.12);
+    --line-dark:rgba(255,255,255,0.10);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--slate);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Space Grotesk',sans-serif;
+    letter-spacing:-0.02em;
+  }
+  .mono{
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
+
+  /* status strip */
+  .statusbar{
+    background:var(--ink);
+    color:#c9d3dc;
+    font-size:12.5px;
+    padding:8px 0;
+    overflow:hidden;
+    border-bottom:1px solid var(--line-dark);
+  }
+  .statusbar .wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--amber);
+    display:inline-block;margin-right:7px;
+    box-shadow:0 0 0 0 rgba(242,169,59,0.6);
+    animation:pulse 2.2s infinite;
+    flex-shrink:0;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(242,169,59,0.55);}
+    70%{box-shadow:0 0 0 6px rgba(242,169,59,0);}
+    100%{box-shadow:0 0 0 0 rgba(242,169,59,0);}
+  }
+  .statusbar .item{display:flex;align-items:center;white-space:nowrap;}
+  .statusbar .sep{color:var(--line-dark);}
+
+  /* nav */
+  header{
+    background:var(--ink);
+    color:#eef1f5;
+    padding:20px 0 26px;
+  }
+  nav.wrap{display:flex;align-items:center;justify-content:space-between;}
+  .logo{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:22px;
+    color:#fff;
+    display:flex;align-items:center;gap:10px;
+  }
+  .logo .mark{
+    width:30px;height:30px;border-radius:7px;
+    background:linear-gradient(135deg,var(--amber),var(--teal-bright));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;font-size:13px;color:var(--ink);
+  }
+  .navlinks{display:flex;gap:30px;font-size:14.5px;color:#b7c0cb;}
+  .navlinks a{text-decoration:none;transition:color .15s;}
+  .navlinks a:hover{color:#fff;}
+  .navcta{display:flex;align-items:center;gap:18px;}
+  .phone{font-size:14px;color:#c9d3dc;text-decoration:none;}
+  @media (max-width:900px){.navlinks{display:none;}}
+
+  /* hero */
+  .hero{background:var(--ink);color:#eef1f5;padding:64px 0 90px;position:relative;overflow:hidden;}
+  .vid-bg{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;z-index:0;opacity:0.55;
+  }
+  .vid-overlay{
+    position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(16,21,28,0.55) 0%,rgba(16,21,28,0.78) 70%,var(--ink) 100%);
+  }
+  .hero .wrap{position:relative;z-index:2;}
+  @media (prefers-reduced-motion:reduce){
+    .vid-bg{display:none;}
+    .dot{animation:none;}
+  }
+  .hero .wrap{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;}
+  @media (max-width:940px){.hero .wrap{grid-template-columns:1fr;gap:44px;}}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;color:var(--amber);
+    text-transform:uppercase;letter-spacing:0.12em;
+    margin-bottom:18px;display:flex;align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(34px,5vw,54px);
+    line-height:1.05;font-weight:700;
+    margin:0 0 22px;color:#fff;
+  }
+  .hero h1 .accent{color:var(--amber);}
+  .hero p.lead{
+    font-size:18px;line-height:1.6;color:#aeb8c4;
+    max-width:480px;margin:0 0 32px;
+  }
+  .btnrow{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 26px;border-radius:8px;
+    font-size:15px;font-weight:600;text-decoration:none;
+    transition:transform .15s, box-shadow .15s;
+    border:1px solid transparent;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-amber{background:var(--amber);color:#241705;}
+  .btn-amber:hover{box-shadow:0 8px 24px rgba(242,169,59,0.28);}
+  .btn-ghost{border-color:rgba(255,255,255,0.25);color:#eef1f5;}
+  .btn-ghost:hover{background:rgba(255,255,255,0.06);}
+
+  /* status panel card */
+  .panel{
+    background:var(--ink-2);
+    border:1px solid var(--line-dark);
+    border-radius:14px;
+    padding:26px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.35);
+  }
+  .panel-head{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:20px;font-size:13px;color:#8f9aa8;
+  }
+  .panel-head .live{display:flex;align-items:center;color:var(--amber);}
+  .panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .stat-card{
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--line-dark);
+    border-radius:10px;padding:16px;
+  }
+  .stat-card .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:26px;color:#fff;font-weight:600;
+  }
+  .stat-card .lbl{font-size:12px;color:#8f9aa8;margin-top:4px;}
+  .panel-bar{margin-top:16px;}
+  .panel-bar .row{display:flex;justify-content:space-between;font-size:12px;color:#8f9aa8;margin-bottom:6px;}
+  .bar-track{height:6px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--teal-bright),var(--amber));border-radius:4px;}
+
+  /* trust strip */
+  .trust{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0;}
+  .trust .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+  .trust .t-item{text-align:left;}
+  .trust .t-num{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--teal);}
+  .trust .t-lbl{font-size:13px;color:var(--slate-soft);margin-top:2px;}
+
+  section{padding:86px 0;}
+  .section-head{max-width:600px;margin-bottom:48px;}
+  .section-head .eyebrow{color:var(--teal);}
+  .section-head h2{font-size:clamp(28px,3.4vw,38px);margin:0 0 14px;color:var(--ink);}
+  .section-head p{font-size:16.5px;color:var(--slate-soft);line-height:1.6;margin:0;}
+
+  /* services */
+  .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  @media (max-width:760px){.svc-grid{grid-template-columns:1fr;}}
+  .svc-card{
+    background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:30px;position:relative;overflow:hidden;
+  }
+  .svc-card .tag{
+    position:absolute;top:20px;right:20px;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+    color:var(--teal);background:rgba(27,75,74,0.08);
+    padding:4px 9px;border-radius:20px;letter-spacing:0.04em;
+  }
+  .svc-icon{
+    width:44px;height:44px;border-radius:10px;
+    background:var(--ink);color:var(--amber);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;
+    margin-bottom:20px;
+  }
+  .svc-card h3{font-size:20px;margin:0 0 10px;color:var(--ink);}
+  .svc-card p{font-size:15px;color:var(--slate-soft);line-height:1.6;margin:0;}
+
+  /* flat fee band */
+  .flatfee{background:var(--teal);color:#eef8f6;}
+  .flatfee .wrap{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;}
+  @media (max-width:860px){.flatfee .wrap{grid-template-columns:1fr;}}
+  .flatfee h2{font-size:clamp(26px,3.2vw,36px);color:#fff;margin:0 0 16px;}
+  .flatfee p{font-size:16px;line-height:1.7;color:#cfe8e4;max-width:480px;}
+  .fee-card{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:12px;padding:30px;
+  }
+  .fee-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.12);font-size:14.5px;}
+  .fee-row:last-child{border-bottom:none;}
+  .fee-row .yes{color:var(--amber);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+
+  /* why grid */
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  @media (max-width:900px){.why-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.why-grid{grid-template-columns:1fr;}}
+  .why-cell{background:#fff;padding:30px 26px;}
+  .why-cell h3{font-size:16.5px;margin:0 0 8px;color:var(--ink);}
+  .why-cell p{font-size:14px;color:var(--slate-soft);line-height:1.6;margin:0;}
+  .why-cell .idx{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber-dim);margin-bottom:10px;display:block;}
+
+  /* cta */
+  .cta{background:var(--ink);color:#fff;text-align:center;padding:90px 0;position:relative;overflow:hidden;}
+  .cta .vid-overlay{background:linear-gradient(180deg,rgba(16,21,28,0.72),rgba(16,21,28,0.82));}
+  .cta .wrap{position:relative;z-index:2;}
+  .cta h2{font-size:clamp(28px,4vw,40px);margin:0 0 16px;}
+  .cta p{color:#aeb8c4;font-size:16.5px;margin:0 0 32px;}
+  .cta .btnrow{justify-content:center;}
+
+  footer{background:var(--ink-2);color:#8f9aa8;padding:44px 0;border-top:1px solid var(--line-dark);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:13.5px;}
+  footer .flogo{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;margin-bottom:8px;}
+  footer .fcol a{display:block;color:#8f9aa8;text-decoration:none;margin-bottom:8px;font-size:13.5px;}
+  footer .fcol a:hover{color:#fff;}
+  footer .fcol h4{font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6472;margin:0 0 14px;}
+</style>
+</head>
+<body>
+
+  <div class="statusbar">
+    <div class="wrap">
+      <span class="item"><span class="dot"></span>All monitored systems operational</span>
+      <span class="sep">/</span>
+      <span class="item mono">Avg. ticket response: 14 min</span>
+      <span class="sep">/</span>
+      <span class="item mono">Network uptime: 99.98%</span>
+    </div>
+  </div>
+
+  <header>
+    <nav class="wrap">
+      <div class="logo"><span class="mark">C7</span> C7 MSP</div>
+      <div class="navlinks">
+        <a href="#services">Services</a>
+        <a href="#flatfee">Flat-Fee Model</a>
+        <a href="#why">Why C7</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="navcta">
+        <a class="phone mono" href="tel:5024735020">502-473-5020</a>
+        <a class="btn btn-amber" href="#contact" style="padding:10px 20px;font-size:14px;">Get a Quote</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero" style="padding-top:44px;">
+    <video class="vid-bg" autoplay muted loop playsinline preload="metadata" poster="assets/hero-poster.jpg" aria-hidden="true">
+      <source src="assets/hero-bg.mp4" type="video/mp4">
+    </video>
+    <div class="vid-overlay" aria-hidden="true"></div>
+    <div class="wrap">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>Managed IT &amp; Cybersecurity</div>
+        <h1>IT that just works.<br><span class="accent">Quietly.</span></h1>
+        <p class="lead">C7 MSP delivers flat-fee managed IT, cloud, security, and backup for growing businesses — so your team stops thinking about technology and starts trusting it.</p>
+        <div class="btnrow">
+          <a href="#contact" class="btn btn-amber">Get a Free Assessment</a>
+          <a href="#services" class="btn btn-ghost">See what's included</a>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <span>C7 OPERATIONS · LIVE</span>
+          <span class="live"><span class="dot" style="margin-right:6px;"></span>Monitoring active</span>
+        </div>
+        <div class="panel-grid">
+          <div class="stat-card">
+            <div class="num" id="statUptime">99.98%</div>
+            <div class="lbl">Network uptime, trailing 90 days</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statTickets">2,367</div>
+            <div class="lbl">Projects completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statClients">400+</div>
+            <div class="lbl">Businesses supported</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statUsers">5,489</div>
+            <div class="lbl">End users covered</div>
+          </div>
+        </div>
+        <div class="panel-bar">
+          <div class="row"><span>Patch &amp; maintenance coverage</span><span>100%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust">
+    <div class="wrap">
+      <div class="t-item"><div class="t-num mono">15+ yrs</div><div class="t-lbl">Average engineer experience</div></div>
+      <div class="t-item"><div class="t-num mono">1</div><div class="t-lbl">Flat monthly invoice</div></div>
+      <div class="t-item"><div class="t-num mono">0</div><div class="t-lbl">Hidden fees, ever</div></div>
+      <div class="t-item"><div class="t-num mono">24/7</div><div class="t-lbl">Monitoring &amp; response</div></div>
+    </div>
+  </div>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Core Services</div>
+        <h2>Four pillars, one invoice.</h2>
+        <p>Every C7 MSP client gets the same coverage — support, cloud, security, and backup — bundled into one predictable flat fee. No à la carte gaps, no surprise line items.</p>
+      </div>
+      <div class="svc-grid">
+        <div class="svc-card">
+          <span class="tag">CYBER CARE</span>
+          <div class="svc-icon">IT</div>
+          <h3>Fully Managed IT Support</h3>
+          <p>Proactive maintenance, help desk, and vCIO guidance covering everything from daily tickets to long-term technology planning. We augment your existing staff or run the whole show.</p>
+        </div>
+        <div class="svc-card">
+          <span class="tag">CYBER CLOUD</span>
+          <div class="svc-icon">☁</div>
+          <h3>Secure Cloud Migration &amp; Management</h3>
+          <p>From straightforward Microsoft 365 migrations to full server-to-cloud transitions, we pick the right platform, execute the move, and stay on for ongoing vendor support.</p>
+        </div>
+        <div class="svc-card">
+          <span class="tag">CYBER SECURITY</span>
+          <div class="svc-icon">⛨</div>
+          <h3>Compliance &amp; Risk Management</h3>
+          <p>HIPAA, PCI, SOX, and other framework support, backed by policy guidance and ongoing vCIO oversight to keep you ahead of emerging threats — not just reacting to them.</p>
+        </div>
+        <div class="svc-card">
+          <span class="tag">CYBER BACKUP</span>
+          <div class="svc-icon">⟳</div>
+          <h3>Data Security &amp; Disaster Recovery</h3>
+          <p>A backup you can't actually recover from isn't a backup. We design recovery paths that get tested, not just scheduled, so failure day isn't the first time it's tried.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="flatfee" id="flatfee">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow" style="color:var(--amber);">The Flat-Fee Model</div>
+        <h2>Simple. Affordable. Effective.</h2>
+        <p>Projects, maintenance, and administration roll into one easy monthly payment — a rarity in this industry, and something fairly unique to C7 MSP. Same price, same coverage, every month.</p>
+      </div>
+      <div class="fee-card">
+        <div class="fee-row"><span>Help desk &amp; proactive maintenance</span><span class="yes">INCLUDED</span></div>
+        <div class="fee-row"><span>vCIO strategic guidance</span><span class="yes">INCLUDED</span></div>
+        <div class="fee-row"><span>Standard project work</span><span class="yes">INCLUDED</span></div>
+        <div class="fee-row"><span>Vendor management</span><span class="yes">INCLUDED</span></div>
+        <div class="fee-row"><span>Surprise invoices</span><span class="yes" style="color:#cfe8e4;">NEVER</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Why C7 MSP</div>
+        <h2>Complexity, simplified.</h2>
+        <p>Every business has its own set of technology challenges. We remove the guesswork and act as a single point of contact for all of it.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-cell">
+          <span class="idx mono">ENG</span>
+          <h3>Highly Skilled Engineers</h3>
+          <p>Every engineer carries 15+ years of experience across SMB and enterprise environments alike.</p>
+        </div>
+        <div class="why-cell">
+          <span class="idx mono">VEN</span>
+          <h3>Vendor Agnostic</h3>
+          <p>Cisco, WatchGuard, HP, Dell, Juniper, and more — your decisions aren't dictated by our preferences.</p>
+        </div>
+        <div class="why-cell">
+          <span class="idx mono">WGA</span>
+          <h3>White Glove Approach</h3>
+          <p>We tailor each solution to your actual challenges rather than throwing technology at the problem.</p>
+        </div>
+        <div class="why-cell">
+          <span class="idx mono">SPC</span>
+          <h3>Single Point of Contact</h3>
+          <p>One team handles all vendor management and technology, so you get to focus on the business.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="contact">
+    <video class="vid-bg" autoplay muted loop playsinline preload="metadata" poster="assets/cta-poster.jpg" aria-hidden="true">
+      <source src="assets/cta-bg.mp4" type="video/mp4">
+    </video>
+    <div class="vid-overlay" aria-hidden="true"></div>
+    <div class="wrap">
+      <h2>Let's simplify your IT.</h2>
+      <p>Tell us where technology is slowing you down — we'll show you what flat-fee coverage looks like for your business.</p>
+      <div class="btnrow">
+        <a href="tel:5024735020" class="btn btn-amber">Call 502-473-5020</a>
+        <a href="mailto:info@c7msp.com" class="btn btn-ghost">Email info@c7msp.com</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>
+        <div class="flogo">C7 MSP</div>
+        <div style="font-size:13px;max-width:260px;">Managed IT &amp; cybersecurity services.<br>A Cyber7 Group company.</div>
+      </div>
+      <div class="fcol">
+        <h4>Company</h4>
+        <a href="#services">Services</a>
+        <a href="#why">Why C7</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="fcol">
+        <h4>Contact</h4>
+        <a href="tel:5024735020">502-473-5020</a>
+        <a href="mailto:info@c7msp.com">info@c7msp.com</a>
+      </div>
+      <div class="fcol" style="font-size:12.5px;color:#5a6472;">
+        © 2026 C7 MSP, a Cyber7 Group LLC company.<br>All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
