@@ -222,6 +222,19 @@
   .fee-row:last-child{border-bottom:none;}
   .fee-row .yes{color:var(--amber);font-family:'IBM Plex Mono',monospace;font-size:13px;}
 
+  /* brand video */
+  .vid-sec{background:var(--ink);color:#eef1f5;padding:86px 0;}
+  .vid-sec .section-head h2{color:#fff;}
+  .vid-sec .section-head p{color:#aeb8c4;}
+  .vid-sec .section-head .eyebrow{color:var(--amber);}
+  .player{
+    border-radius:14px;overflow:hidden;
+    border:1px solid var(--line-dark);
+    box-shadow:0 24px 60px rgba(0,0,0,0.4);
+    background:#000;
+  }
+  .player video{display:block;width:100%;height:auto;}
+
   /* why grid */
   .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
   @media (max-width:900px){.why-grid{grid-template-columns:repeat(2,1fr);}}
@@ -371,6 +384,22 @@
         <div class="fee-row"><span>Standard project work</span><span class="yes">INCLUDED</span></div>
         <div class="fee-row"><span>Vendor management</span><span class="yes">INCLUDED</span></div>
         <div class="fee-row"><span>Surprise invoices</span><span class="yes" style="color:#cfe8e4;">NEVER</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vid-sec" id="story">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Our Story</div>
+        <h2>See who you're working with.</h2>
+        <p>Two minutes on who we are, how we work, and why businesses trust C7 with their technology.</p>
+      </div>
+      <div class="player">
+        <video controls preload="metadata" poster="assets/brand-poster.jpg">
+          <source src="assets/brand-story.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
     </div>
   </section>
